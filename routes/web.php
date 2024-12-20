@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Models\User;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -22,3 +26,7 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
+
+//authentication routes
+Route::get('/redirect/github', [ AuthController::class, 'GithubRedirect' ]);
+Route::get('/callback/github', [ AuthController::class, 'GithubCallback' ]);
