@@ -33,5 +33,4 @@ class AuthService{
 
         return redirect('/dashboard');
     }
-
 }

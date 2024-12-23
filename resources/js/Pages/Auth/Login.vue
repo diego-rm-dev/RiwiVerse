@@ -79,6 +79,7 @@ const submit = () => {
                         <span class="inline-block transform skew-x-[10deg]">ingresar</span>
                     </button>
                 </div>
+                <a class="font-bold text-white text-center block" href="/register">¿No tienes una cuenta aún? ¡Registrate!</a>
             </form>
 
             <!-- Decoraciones -->
