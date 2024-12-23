@@ -15,6 +15,10 @@ const submit = () => {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
+
+const redirectHome = () => {
+    window.location.href = '/';
+}
 </script>
 
 <template>
@@ -24,8 +28,8 @@ const submit = () => {
         <div class="absolute top-0 left-0 w-full h-full"
             style="background: #6B5CFF; clip-path: polygon(100% 0, 70% 0, 30% 100%, 100% 100%);"></div>
 
-        <div class="absolute top-6 left-6 text-2xl font-bold text-indigo-700">
-            <img :src="riwiVerseIcon" alt="RiwiVerse" class="w-18 h-10" />
+        <div class="absolute top-6 left-6 text-2xl font-bold text-indigo-700 logo">
+            <img :src="riwiVerseIcon" v-on:click="redirectHome" alt="RiwiVerse" class="w-18 h-10" />
         </div>
 
         <div class="relative z-10 w-full max-w-xl bg-[#2f2d42] rounded-xl p-8 shadow-lg">
@@ -79,7 +83,7 @@ const submit = () => {
                         <span class="inline-block transform skew-x-[10deg]">Registrarme</span>
                     </button>
                 </div>
-                    <a class="font-bold text-white text-center block" href="/login">¿Ya tienes una cuenta? ¡Logéate!</a>
+                <a class="font-bold text-white text-center block" href="/login">¿Ya tienes una cuenta? ¡Logéate!</a>
             </form>
 
             <div class="absolute top-[50px] -left-12 ">
@@ -99,3 +103,19 @@ const submit = () => {
         </div>
     </div>
 </template>
+<style>
+.logo img {
+    width: 200px;
+    /* Tamaño del logo */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    cursor: pointer;
+    /* Indica que es interactivo */
+}
+
+.logo img:hover {
+    transform: scale(1.07);
+    /* Aumenta ligeramente de tamaño */
+    opacity: 0.9;
+    /* Reduce un poco la opacidad */
+}
+</style>
