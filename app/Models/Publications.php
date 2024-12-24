@@ -12,10 +12,22 @@ class Publications extends Model
         'hashtags',
         'status',
         'user_id',
+        'images',
+        'title',
+    ];
+
+    protected $casts = [
+        'images' => 'array', 
+        'date' => 'datetime',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comments::class, 'publication_id');
     }
 }

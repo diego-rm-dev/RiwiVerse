@@ -261,7 +261,7 @@ onMounted(() => {
         </div>
     </div>
     <footer class="footer">
-        <p>© 2023 RIWI | Centro Comercial de Moda Outlet, Piso 3, Cl. 16 #55-129, Medellín, Colombia.</p>
+        <p>© 2024 RiwiVerse | Medellín, Colombia.</p>
     </footer>
 </template>
 

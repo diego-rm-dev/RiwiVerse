@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PublicationController;
+use App\Models\Publications;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
@@ -23,10 +26,18 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        $publications = Publications::with([
+            'user',           
+            'comments.user',  
+        ])->get();        return Inertia::render('Dashboard', [
+            'publications' => $publications,
+        ]);
     })->name('dashboard');
 });
 
 //authentication routes
 Route::get('/redirect/github', [ AuthController::class, 'GithubRedirect' ]);
 Route::get('/callback/github', [ AuthController::class, 'GithubCallback' ]);
+
+Route::middleware('auth:sanctum')->post('/publications', [PublicationController::class, 'store'])->name('publications.store');
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
