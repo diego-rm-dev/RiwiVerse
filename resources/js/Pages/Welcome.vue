@@ -1,47 +1,32 @@
 <script setup>
-import { onMounted, ref, computed } from "vue";
+/* =========================================================
+ * 1) Imports
+ * ========================================================= */
+import { onMounted, ref, computed } from "vue"
 
-onMounted(() => {
-    const languageSelector = document.querySelector(".selected-language");
-    const dropdown = document.querySelector(".dropdown");
 
-    if (languageSelector && dropdown) {
-        languageSelector.addEventListener("click", () => {
-            const isDropdownVisible = dropdown.style.display === "block";
-            dropdown.style.display = isDropdownVisible ? "none" : "block";
-        });
-
-        document.addEventListener("click", (event) => {
-            if (!languageSelector.contains(event.target)) {
-                dropdown.style.display = "none";
-            }
-        });
-    }
-});
-
-const redirectRegister = () => {
-    window.location.href = "/register";
+/* =========================================================
+ * 2) Variables reactivas, referencias y objetos
+ * ========================================================= */
+/**
+ * Íconos por defecto (like vacío) y alterno (like lleno)
+ */
+const defaultIcons = {
+    like: "../../Icons/line/heart.svg",
 }
 
-const defaultIcons = {
-    like: '../../Icons/line/heart.svg',
-};
-
 const alternateIcons = {
-    like: '../../Icons/line/heart-filled.svg',
-};
+    like: "../../Icons/line/heart-filled.svg",
+}
 
-const currentIcons = ref({ ...defaultIcons });
+/**
+ * Objeto de íconos utilizado en el template (like actual)
+ */
+const currentIcons = ref({ ...defaultIcons })
 
-const toggleLike = () => {
-    currentIcons.value.like =
-        currentIcons.value.like === defaultIcons.like
-            ? alternateIcons.like
-            : defaultIcons.like;
-
-    likeCount.value += currentIcons.value.like === alternateIcons.like ? 1 : -1;
-};
-
+/**
+ * Listado de citas que se mostrarán de manera rotativa
+ */
 const quotes = ref([
     { text: "Un bug al día mantiene al deploy feliz.", author: "- RiwiVerse" },
     { text: "Si no tienes bugs, ¿realmente programaste?", author: "- RiwiVerse" },
@@ -63,43 +48,117 @@ const quotes = ref([
     { text: "Los viernes no son para deploys... ni para aventuras.", author: "- RiwiVerse" },
     { text: "No temas al código que falla, teme al código que no sabes por qué funciona.", author: "- RiwiVerse" },
     { text: "Un console.log es el mejor amigo del programador.", author: "- RiwiVerse" },
-]);
+])
 
-const likeCount = ref(Math.floor(Math.random() * 1000) + 1);
-const commentCount = ref(Math.floor(Math.random() * 500) + 1);
-const shareCount = ref(Math.floor(Math.random() * 200) + 1);
+/**
+ * Contadores aleatorios de likes, comments, shares
+ */
+const likeCount = ref(Math.floor(Math.random() * 1000) + 1)
+const commentCount = ref(Math.floor(Math.random() * 500) + 1)
+const shareCount = ref(Math.floor(Math.random() * 200) + 1)
+
+/**
+ * Índice actual para la cita que se muestra
+ */
+const currentIndex = ref(0)
 
 
-const currentIndex = ref(0);
+/* =========================================================
+ * 3) Computed Properties
+ * ========================================================= */
+/**
+ * Obtiene la cita actual basada en currentIndex
+ */
+const currentQuote = computed(() => quotes.value[currentIndex.value])
 
-const currentQuote = computed(() => quotes.value[currentIndex.value]);
 
+/* =========================================================
+ * 4) Funciones y Métodos
+ * ========================================================= */
+/**
+ * Redirige a la página de registro
+ */
+const redirectRegister = () => {
+    window.location.href = "/register"
+}
+
+/**
+ * Alterna el ícono de 'like' y actualiza el contador de likes
+ */
+const toggleLike = () => {
+    currentIcons.value.like =
+        currentIcons.value.like === defaultIcons.like
+            ? alternateIcons.like
+            : defaultIcons.like
+
+    likeCount.value += currentIcons.value.like === alternateIcons.like ? 1 : -1
+}
+
+/**
+ * Inicia la rotación de citas cada 5 segundos
+ */
 const startQuoteRotation = () => {
     setInterval(() => {
-        currentIndex.value = (currentIndex.value + 1) % quotes.value.length;
-    }, 5000);
-};
+        currentIndex.value = (currentIndex.value + 1) % quotes.value.length
+    }, 5000)
+}
 
+
+/* =========================================================
+ * 5) Lifecycle Hooks
+ * ========================================================= */
 onMounted(() => {
-    startQuoteRotation();
-});
+    // Inicia la rotación de las citas
+    startQuoteRotation()
 
+    // Manejo de click para mostrar/ocultar el dropdown de idiomas
+    const languageSelector = document.querySelector(".selected-language")
+    const dropdown = document.querySelector(".dropdown")
+
+    if (languageSelector && dropdown) {
+        languageSelector.addEventListener("click", () => {
+            const isDropdownVisible = dropdown.style.display === "block"
+            dropdown.style.display = isDropdownVisible ? "none" : "block"
+        })
+
+        document.addEventListener("click", (event) => {
+            if (!languageSelector.contains(event.target)) {
+                dropdown.style.display = "none"
+            }
+        })
+    }
+})
 </script>
-
 <template>
+    <!-- 
+        Contenedor principal de la vista
+        Incluye el navbar, secciones de información,
+        un ejemplo de post con acciones (like, comment, share),
+        y una sección final de biografía.
+    -->
     <div class="container">
+
+        <!-- ==============================================
+             1) NAVBAR (LOGO, LINKS, SELECTOR DE IDIOMA)
+        =============================================== -->
         <div class="navbar">
+            <!-- Logo principal -->
             <div class="logo">
-                <img src="../../Icons/main-logo.svg" alt="Riwi-verse">
+                <img src="../../Icons/main-logo.svg" alt="Riwi-verse" />
             </div>
+
+            <!-- Enlaces de navegación (registro, login, idioma) -->
             <div class="links">
                 <ul class="lista-links">
-                    <li><a href="/register">Registrarme</a></li>
+                    <li>
+                        <a href="/register">Registrarme</a>
+                    </li>
                     <li>
                         <a href="/login" class="cta">
                             <span>Inicia Sesión</span>
                         </a>
                     </li>
+                    <!-- Selector de idioma (Español/English) -->
                     <li class="language-selector">
                         <div class="selected-language">
                             Español <span>▼</span>
@@ -110,49 +169,92 @@ onMounted(() => {
                         </ul>
                     </li>
                 </ul>
-
             </div>
         </div>
+        <!-- FIN NAVBAR -->
+
+
+        <!-- ==============================================
+             2) SECCIÓN HERO / BANNER PRINCIPAL
+        =============================================== -->
         <div class="hero-banner">
             <div class="image-banner">
                 <div class="image-banner-card">
-                    <img src="../../Icons/imagen-CTA.svg" alt="Hero Banner" class="banner-image">
+                    <img src="../../Icons/imagen-CTA.svg" alt="Hero Banner" class="banner-image" />
                 </div>
             </div>
+
             <div class="banner-text-card">
                 <div class="text-banner">
-                    <h1 class="title-banner-text">¿Listo para compartir el bug más gracioso de tu vida?</h1>
-                    <h2 class="subtitle-banner-text">En RiwiVerse los bugs no se arreglan, ¡se memean!</h2>
-                    <p class="description-banner-text">Únete a nuestra comunidad y convierte esos errores de código en
-                        risas compartidas. Porque en un mundo lleno de 404, aquí somos el 200 OK de los memes.</p>
-                    <button v-on:click="redirectRegister" class="button-cta-banner-text">Quiero unirme a la
-                        diversión</button>
+                    <h1 class="title-banner-text">
+                        ¿Listo para compartir el bug más gracioso de tu vida?
+                    </h1>
+                    <h2 class="subtitle-banner-text">
+                        En RiwiVerse los bugs no se arreglan, ¡se memean!
+                    </h2>
+                    <p class="description-banner-text">
+                        Únete a nuestra comunidad y convierte esos errores de código
+                        en risas compartidas. Porque en un mundo lleno de 404, aquí
+                        somos el 200 OK de los memes.
+                    </p>
+                    <!-- Botón que llama a redirectRegister (del script) -->
+                    <button v-on:click="redirectRegister" class="button-cta-banner-text">
+                        Quiero unirme a la diversión
+                    </button>
                 </div>
             </div>
         </div>
+        <!-- FIN SECCIÓN HERO -->
+
+
+        <!-- ==============================================
+             3) SECCIONES DE INFORMACIÓN
+        =============================================== -->
         <div class="information-section">
+            <!-- Bloque 1 -->
             <div class="first-information">
                 <div class="programa-text">
                     <h1>PROGRAMA</h1>
                 </div>
-                <h1 class="h1-first-section">como un heroe</h1>
+                <h1 class="h1-first-section">
+                    como un heroe
+                </h1>
             </div>
+
+            <!-- Bloque 2 -->
             <div class="second-information">
                 <div class="memea-text">
                     <h1>MEMEA</h1>
                 </div>
-                <h1 class="h1-second-section">como una leyenda</h1>
-            </div>
-        </div>
-        <div class="comunity-section">
-            <div class="comunity-section-title">
-                <h1>"{{ currentQuote.text }}"</h1>
-                <p class="quote-author">{{ currentQuote.author }}</p>
+                <h1 class="h1-second-section">
+                    como una leyenda
+                </h1>
             </div>
         </div>
 
+
+        <!-- ==============================================
+             4) SECCIÓN DE FRASE (QUOTES) DE LA COMUNIDAD
+        =============================================== -->
+        <div class="comunity-section">
+            <div class="comunity-section-title">
+                <!-- currentQuote viene del script (computed) -->
+                <h1>"{{ currentQuote.text }}"</h1>
+                <p class="quote-author">
+                    {{ currentQuote.author }}
+                </p>
+            </div>
+        </div>
+
+
+        <!-- ==============================================
+             5) SECCIÓN DEMOSTRATIVA (EJEMPLO DE POST Y TEXTO)
+        =============================================== -->
         <div class="demostration-section">
+
+            <!-- Tarjeta de post de ejemplo (con acciones like/comment/share) -->
             <div class="post-card">
+                <!-- Encabezado (avatar, usuario, tiempo) -->
                 <div class="post-header">
                     <div class="avatar">
                         <img src="../../Icons/perfil-1.jpg" alt="User Avatar" />
@@ -163,10 +265,12 @@ onMounted(() => {
                     </div>
                 </div>
 
+                <!-- Contenido (meme, imagen) -->
                 <div class="post-content">
                     <img src="../../Icons/meme-1.jpeg" alt="Meme Image" class="meme-image" />
                 </div>
 
+                <!-- Acciones (like, comment, share), usando las refs del script -->
                 <div class="post-actions">
                     <div class="action-group">
                         <span class="counter">{{ likeCount }}</span>
@@ -174,12 +278,14 @@ onMounted(() => {
                             <img :src="currentIcons.like" alt="Like" class="icon" />
                         </button>
                     </div>
+
                     <div class="action-group">
                         <span class="counter">{{ commentCount }}</span>
                         <button class="action-btn" aria-label="Comment">
                             <img src="../../../public/Icons/line/comment.svg" alt="Comment" class="icon" />
                         </button>
                     </div>
+
                     <div class="action-group">
                         <span class="counter">{{ shareCount }}</span>
                         <button class="action-btn" aria-label="Share">
@@ -188,9 +294,11 @@ onMounted(() => {
                     </div>
                 </div>
 
-
+                <!-- Texto y hashtags del post -->
                 <div class="post-caption">
-                    <p class="caption-text">que aprendan un lenguaje de hombre :v</p>
+                    <p class="caption-text">
+                        que aprendan un lenguaje de hombre :v
+                    </p>
                     <div class="tags">
                         <span>#risa</span>
                         <span>#programming</span>
@@ -198,12 +306,18 @@ onMounted(() => {
                     </div>
                 </div>
 
+                <!-- Pie de comentarios -->
                 <div class="post-comments">
                     <p>comentarios ↓</p>
                 </div>
             </div>
+            <!-- FIN post-card -->
+
+            <!-- Texto explicativo para unirse a RiwiVerse -->
             <div class="text-demostration">
-                <h1 class="demo-title">¡Únete a la diversión en RiwiVerse!</h1>
+                <h1 class="demo-title">
+                    ¡Únete a la diversión en RiwiVerse!
+                </h1>
                 <p class="demo-text">
                     ¿Tienes un bug que merece ser memorizado? Aquí puedes:
                 </p>
@@ -216,16 +330,26 @@ onMounted(() => {
                 <p class="demo-footer">
                     <strong>Porque aquí los bugs no se arreglan… ¡se memean!</strong>
                 </p>
+                <!-- Botón para registrarse (usa redirectRegister del script) -->
                 <div class="cta-container">
-                    <button class="cta-button" v-on:click="redirectRegister">¡Regístrate ahora!</button>
+                    <button class="cta-button" v-on:click="redirectRegister">
+                        ¡Regístrate ahora!
+                    </button>
                 </div>
             </div>
         </div>
+        <!-- FIN SECCIÓN DEMOSTRACIÓN -->
+
+
+        <!-- ==============================================
+             6) SECCIÓN DE BIOGRAFÍA
+        =============================================== -->
         <div class="biografy-section">
             <div class="bio-image-container">
                 <div class="bio-image">
                     <img src="../../Icons/perfil-1.jpg" alt="Diego Ramirez" />
                 </div>
+                <!-- Enlaces a redes sociales -->
                 <div class="contact-info">
                     <div class="social-icons">
                         <a href="https://www.instagram.com/diego_rm_dev" target="_blank" aria-label="Instagram">
@@ -239,405 +363,70 @@ onMounted(() => {
                             <img src="../../../public/Icons/line/linkedin.svg" alt="LinkedIn Icon" />
                         </a>
                     </div>
-                    <p class="email">diego.rm.dev@gmail.com</p>
+                    <p class="email">
+                        diego.rm.dev@gmail.com
+                    </p>
                 </div>
             </div>
 
+            <!-- Texto de la biografía -->
             <div class="bio-text-container">
-                <h2 class="bio-title">El Coder Detrás de RiwiVerse</h2>
-                <p>¡Hola, soy Diego Ramirez! <br>
-                    Soy un coder freelance desde Medellín, Colombia, al igual que tú: alguien que vive entre líneas de
-                    código, sueños de deploys perfectos y, claro, uno que otro bug inesperado.</p>
+                <h2 class="bio-title">
+                    El Coder Detrás de RiwiVerse
+                </h2>
+                <p>
+                    ¡Hola, soy Diego Ramirez! <br>
+                    Soy un coder freelance desde Medellín, Colombia, al igual que tú:
+                    alguien que vive entre líneas de código, sueños de deploys perfectos
+                    y, claro, uno que otro bug inesperado.
+                </p>
                 <h3>¿Mi Filosofía?</h3>
                 <ul>
                     <li>Si el código no compila... ¡haz un meme!</li>
                     <li>Si encuentras un bug... ¡compártelo antes de arreglarlo!</li>
                     <li>Si todo funciona a la primera... bueno, eso nunca pasa, ¿cierto?</li>
                 </ul>
-                <p>Como tú, también he pasado noches largas peleando con errores misteriosos, y de ahí nació la idea de
-                    RiwiVerse: un lugar donde todos los coders podamos reírnos de esas batallas (y ganar algo de cordura
-                    en el proceso).</p>
+                <p>
+                    Como tú, también he pasado noches largas peleando con errores misteriosos,
+                    y de ahí nació la idea de RiwiVerse: un lugar donde todos los coders podamos
+                    reírnos de esas batallas (y ganar algo de cordura en el proceso).
+                </p>
             </div>
         </div>
+        <!-- FIN SECCIÓN BIOGRAFÍA -->
     </div>
+
+    <!-- ==============================================
+         7) FOOTER
+    =============================================== -->
     <footer class="footer">
         <p>© 2024 RiwiVerse | Medellín, Colombia.</p>
     </footer>
 </template>
-
 <style>
-.footer {
-    background-color: #2c2c54;
-    color: #fff;
-    text-align: center;
-    padding: 15px 20px;
-    font-size: 0.9rem;
-    font-family: Arial, sans-serif;
-    height: 100px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+/* ==============================================================
+ * 1) RESET Y BASE
+ * ============================================================== */
 
-
-.biografy-section {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    background-color: #f9f9f9;
-    padding: 100px;
-    position: relative;
-}
-
-.bio-image-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    background-color: #2c2c54;
-    border-radius: 12px;
-    padding: 40px 20px;
-    text-align: center;
-    color: #fff;
-    max-width: 600px;
-    z-index: 2;
-    margin-top: -40px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.contact-info {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.social-icons {
-    display: flex;
-    gap: 15px;
-}
-
-.social-icons a {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-}
-
-.social-icons img {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-    transition: transform 0.2s ease-in-out;
-}
-
-.social-icons a:hover img {
-    transform: scale(1.2);
-}
-
-.email {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.bio-image {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
-    z-index: 2;
-    /* Asegura que esté encima de decoraciones */
-}
-
-.bio-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.bio-text-container {
-    flex: 1;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, #6B5CFF 0%, #4A4AFF 100%);
-    color: #fff;
-    border-radius: 0 12px 12px 0;
-    position: relative;
-    z-index: 1;
-    border-radius: 12px;
-}
-
-.bio-title {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.bio-text-container h3 {
-    margin-top: 20px;
-    font-size: 1.4rem;
-    font-weight: bold;
-}
-
-.bio-text-container ul {
-    list-style: disc;
-    margin: 10px 0;
-    padding-left: 20px;
-}
-
-.bio-text-container ul li {
-    margin-bottom: 10px;
-}
-
-.bio-text-container p {
-    line-height: 1.5;
-    margin-bottom: 10px;
-}
-
-
-.demostration-section {
-    display: flex;
-    gap: 80px;
-    padding: 20px;
-    align-items: center;
-    max-width: 900px;
-    margin: 0 auto;
-    justify-content: center;
-}
-
-.post-card {
-    flex: 1;
-}
-
-.text-demostration {
-    flex: 1;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 12px;
-    border: 2px solid #6b5cff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.demo-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #6b5cff;
-    margin-bottom: 15px;
-}
-
-.demo-text {
-    font-size: 1rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.demo-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0 0 15px;
-}
-
-.demo-list li {
-    font-size: 1rem;
-    margin-bottom: 10px;
-    color: #6b5cff;
-    position: relative;
-    padding-left: 20px;
-}
-
-.demo-list li::before {
-    content: "✔";
-    color: #ff2404;
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
-.demo-footer {
-    font-size: 1rem;
-    color: #333;
-    text-align: center;
-    margin-top: 15px;
-    font-weight: bold;
-}
-
-
-.cta-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.cta-button {
-    background-color: #6B5CFF;
-    color: #fff;
-    padding: 12px 24px;
-    font-weight: 600;
-    font-size: 1rem;
-    transform: skewX(-10deg);
-    border-radius: 5px;
-    transition: all 0.3s ease-in-out;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.cta-button span {
-    display: inline-block;
-    transform: skewX(10deg);
-}
-
-.cta-button:hover {
-    background-color: #5a4ed6;
-    transform: skewX(-10deg) scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.post-card {
-    border: 2px solid #6b5cff;
-    border-radius: 12px;
-    padding: 20px;
-    max-width: 450px;
-    margin: 20px auto;
-    background-color: #fff;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.post-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.avatar img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid #6b5cff;
-}
-
-.user-info {
-    margin-left: 10px;
-}
-
-.username {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #333;
-}
-
-.post-time {
-    font-size: 0.8rem;
-    color: #888;
-}
-
-.post-content {
-    text-align: center;
-    margin: 15px 0;
-}
-
-.meme-image {
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-.post-actions {
-    display: flex;
-    justify-content: space-around;
-    margin: 15px 0;
-}
-
-.action-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.counter {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #6b5cff;
-}
-
-.action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease;
-}
-
-.action-btn:hover {
-    transform: scale(1.2);
-}
-
-.icon {
-    width: 24px;
-    height: 24px;
-}
-
-
-.post-caption {
-    text-align: center;
-    margin: 15px 0;
-}
-
-.caption-text {
-    font-size: 1rem;
-    font-weight: 400;
-    color: #333;
-}
-
-.tags span {
-    margin-right: 8px;
-    color: #6b5cff;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.post-comments {
-    text-align: center;
-    font-size: 0.9rem;
-    color: #6b5cff;
-    margin-top: 10px;
-}
-
-.post-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-
+/* Reset de márgenes, rellenos y box-sizing */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Ajustes básicos de html y body */
 html,
 body {
     width: 100%;
     height: 100%;
     font-family: 'Arial', sans-serif;
 }
+
+
+/* ==============================================================
+ * 2) CONTENEDOR PRINCIPAL
+ * ============================================================== */
 
 .container {
     display: flex;
@@ -646,6 +435,11 @@ body {
     max-width: 100%;
     gap: 30px;
 }
+
+
+/* ==============================================================
+ * 3) NAVBAR (ENCABEZADO, LINKS, SELECTOR IDIOMA)
+ * ============================================================== */
 
 .navbar {
     display: flex;
@@ -656,6 +450,7 @@ body {
     height: 100px;
 }
 
+/* Lista de links en el navbar */
 .lista-links {
     display: flex;
     list-style: none;
@@ -665,13 +460,23 @@ body {
     font-size: 1rem;
 }
 
+/* Enlaces genéricos */
 .lista-links li a {
+    color: #6B5CFF;
     text-decoration: none;
-    color: #000;
-    font-weight: 500;
-    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 10px 20px;
+    transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+    display: inline-block;
 }
 
+.lista-links li a:hover {
+    transform: scale(1.05);
+    color: #5A4ED6;
+}
+
+/* Enlace con estilo CTA (login) */
 .lista-links li a.cta {
     background-color: #6B5CFF;
     color: #fff;
@@ -699,108 +504,7 @@ body {
     color: #fff;
 }
 
-.lista-links li a {
-    color: #6B5CFF;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    padding: 10px 20px;
-    transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
-    display: inline-block;
-}
-
-.lista-links li a:hover {
-    transform: scale(1.05);
-    color: #5A4ED6;
-}
-
-
-.hero-banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-    padding: 20px 120px;
-}
-
-.text-banner {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.hero-banner .image-banner {
-    width: 40%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hero-banner .image-banner-card {
-    width: 100%;
-    height: 350px;
-    background-color: #6B5CFF;
-    border-radius: 30px;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.hero-banner .image-banner-card img {
-    width: 100%;
-    max-width: 900px;
-    height: auto;
-}
-
-.hero-banner .banner-text-card {
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    background-color: #6B5CFF;
-    color: #fff;
-    padding: 30px 70px;
-    border-radius: 30px;
-}
-
-.title-banner-text {
-    font-size: 2.2rem;
-    font-weight: 700;
-}
-
-.subtitle-banner-text {
-    font-size: 1.4rem;
-    font-weight: 500;
-}
-
-.description-banner-text {
-    font-size: 1rem;
-    line-height: 1.5;
-}
-
-.button-cta-banner-text {
-    padding: 10px;
-    border: 2px solid #fff;
-    border-radius: 20px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
-    color: #fff;
-    width: 50%;
-    background-color: transparent;
-    transition: all 0.3s ease-in-out;
-    text-align: center;
-}
-
-.button-cta-banner-text:hover {
-    background-color: #fff;
-    color: #6B5CFF;
-    border: 2px solid #6B5CFF;
-    transform: scale(1.05);
-}
-
-
+/* Logo */
 .logo img {
     width: 200px;
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -812,8 +516,7 @@ body {
     opacity: 0.9;
 }
 
-
-
+/* Selector de idioma */
 .language-selector {
     position: relative;
     cursor: pointer;
@@ -836,6 +539,7 @@ body {
     background-color: #e0e0e0;
 }
 
+/* Dropdown de idiomas */
 .dropdown {
     position: absolute;
     top: 100%;
@@ -847,6 +551,7 @@ body {
     width: 100px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: none;
+    /* Por defecto está oculto */
     z-index: 10;
 }
 
@@ -873,6 +578,105 @@ body {
     border-radius: 8px;
 }
 
+
+/* ==============================================================
+ * 4) SECCIÓN HERO / BANNER
+ * ============================================================== */
+
+.hero-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    padding: 20px 120px;
+}
+
+/* Contenedor del texto principal del banner */
+.text-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Imagen del banner (lado izquierdo) */
+.hero-banner .image-banner {
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-banner .image-banner-card {
+    width: 100%;
+    height: 350px;
+    background-color: #6B5CFF;
+    border-radius: 30px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-banner .image-banner-card img {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+}
+
+/* Texto del banner (lado derecho) */
+.hero-banner .banner-text-card {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    background-color: #6B5CFF;
+    color: #fff;
+    padding: 30px 70px;
+    border-radius: 30px;
+}
+
+.title-banner-text {
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
+.subtitle-banner-text {
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.description-banner-text {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Botón CTA dentro del banner */
+.button-cta-banner-text {
+    padding: 10px;
+    border: 2px solid #fff;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: #fff;
+    width: 50%;
+    background-color: transparent;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+}
+
+.button-cta-banner-text:hover {
+    background-color: #fff;
+    color: #6B5CFF;
+    border: 2px solid #6B5CFF;
+    transform: scale(1.05);
+}
+
+
+/* ==============================================================
+ * 5) SECCIONES DE INFORMACIÓN
+ * ============================================================== */
+
 .information-section {
     display: flex;
     flex-direction: column;
@@ -883,6 +687,7 @@ body {
     width: 100%;
 }
 
+/* Bloques de información (Programa / Memea) */
 .first-information,
 .second-information {
     display: flex;
@@ -896,6 +701,7 @@ body {
     font-weight: 800;
 }
 
+/* Caja "PROGRAMA" */
 .programa-text {
     background-color: #6B5CFF;
     color: #fff;
@@ -904,7 +710,6 @@ body {
     transform: skewX(-10deg);
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
-
 }
 
 .programa-text:hover {
@@ -919,6 +724,7 @@ body {
     font-weight: 800;
 }
 
+/* Caja "MEMEA" */
 .memea-text {
     background-color: #FE654F;
     color: #fff;
@@ -933,7 +739,6 @@ body {
     background-color: #fd3c1e;
     transform: skewX(-10deg) scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
 }
 
 .memea-text h1 {
@@ -941,6 +746,11 @@ body {
     color: #fff;
     font-weight: 800;
 }
+
+
+/* ==============================================================
+ * 6) SECCIÓN DE FRASE DE LA COMUNIDAD (QUOTES)
+ * ============================================================== */
 
 .comunity-section {
     display: flex;
@@ -964,6 +774,7 @@ body {
     text-transform: uppercase;
 }
 
+/* Título y autor */
 .comunity-section-title h1 {
     margin-bottom: 10px;
 }
@@ -976,6 +787,7 @@ body {
     text-transform: none;
 }
 
+/* Elementos decorativos alrededor del título */
 .comunity-section-title::before,
 .comunity-section-title::after {
     content: "";
@@ -1019,5 +831,377 @@ body {
     transform: rotate(-45deg);
     opacity: 0.3;
     z-index: 1;
+}
+
+
+/* ==============================================================
+ * 7) SECCIÓN DEMOSTRATIVA (POST Y EXPLICACIÓN)
+ * ============================================================== */
+
+.demostration-section {
+    display: flex;
+    gap: 80px;
+    padding: 20px;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+/* Tarjeta de post */
+.post-card {
+    border: 2px solid #6b5cff;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 450px;
+    margin: 20px auto;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 1;
+}
+
+.post-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Header del post (avatar, username, tiempo) */
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #6b5cff;
+}
+
+.user-info {
+    margin-left: 10px;
+}
+
+.username {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.post-time {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Contenido del post (imagen/meme) */
+.post-content {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.meme-image {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Acciones del post (like, comment, share) */
+.post-actions {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+}
+
+.action-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.counter {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #6b5cff;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: scale(1.2);
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Texto y hashtags */
+.post-caption {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.caption-text {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #333;
+}
+
+.tags span {
+    margin-right: 8px;
+    color: #6b5cff;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Sección de comentarios (placeholder) */
+.post-comments {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6b5cff;
+    margin-top: 10px;
+}
+
+/* Texto de explicación al lado del post */
+.text-demostration {
+    flex: 1;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #6b5cff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.demo-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #6b5cff;
+    margin-bottom: 15px;
+}
+
+.demo-text {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Lista interna de elementos */
+.demo-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 15px;
+}
+
+.demo-list li {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #6b5cff;
+    position: relative;
+    padding-left: 20px;
+}
+
+.demo-list li::before {
+    content: "✔";
+    color: #ff2404;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.demo-footer {
+    font-size: 1rem;
+    color: #333;
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Botón CTA */
+.cta-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.cta-button {
+    background-color: #6B5CFF;
+    color: #fff;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 1rem;
+    transform: skewX(-10deg);
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button span {
+    display: inline-block;
+    transform: skewX(10deg);
+}
+
+.cta-button:hover {
+    background-color: #5a4ed6;
+    transform: skewX(-10deg) scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ==============================================================
+ * 8) SECCIÓN BIOGRAFÍA
+ * ============================================================== */
+
+.biografy-section {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: #f9f9f9;
+    padding: 100px;
+    position: relative;
+}
+
+.bio-image-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    background-color: #2c2c54;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    color: #fff;
+    max-width: 600px;
+    z-index: 2;
+    margin-top: -40px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Imagen circular (avatar) */
+.bio-image {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    z-index: 2;
+    /* Asegura que esté encima de decoraciones */
+}
+
+.bio-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Información de contacto y redes sociales */
+.contact-info {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+}
+
+.social-icons img {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.2s ease-in-out;
+}
+
+.social-icons a:hover img {
+    transform: scale(1.2);
+}
+
+.email {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Contenedor de texto en la bio */
+.bio-text-container {
+    flex: 1;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #6B5CFF 0%, #4A4AFF 100%);
+    color: #fff;
+    border-radius: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.bio-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.bio-text-container h3 {
+    margin-top: 20px;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.bio-text-container ul {
+    list-style: disc;
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.bio-text-container ul li {
+    margin-bottom: 10px;
+}
+
+.bio-text-container p {
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+
+/* ==============================================================
+ * 9) FOOTER
+ * ============================================================== */
+
+.footer {
+    background-color: #2c2c54;
+    color: #fff;
+    text-align: center;
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    font-family: Arial, sans-serif;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

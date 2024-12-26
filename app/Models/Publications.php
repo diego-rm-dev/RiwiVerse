@@ -30,4 +30,15 @@ class Publications extends Model
     {
         return $this->hasMany(Comments::class, 'publication_id');
     }
+
+    public function likers()
+    {
+        return $this->belongsToMany(
+            User::class,           
+            'publication_user_likes', 
+            'publication_id',         
+            'user_id'                    
+        );
+    }
+    
 }

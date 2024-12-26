@@ -21,4 +21,8 @@ class PublicationController extends Controller
     public function index(){
         $this->publicationService->index();
     }
+
+    public function show($id){
+        $this->publicationService->show($id);
+    }
 }

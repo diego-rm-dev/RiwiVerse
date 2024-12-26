@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PublicationController;
 use App\Models\Publications;
 use App\Models\User;
@@ -26,14 +27,27 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        $publications = Publications::with([
-            'user',           
-            'comments.user',  
-        ])->get();        return Inertia::render('Dashboard', [
+        $user = auth()->user();
+        $unreadNotifications = $user->unreadNotifications;
+
+
+        $publications = Publications::with('user', 'comments.user', 'likers')
+        ->get()
+        ->map(function($pub) {
+            $pub->isLiked = $pub->likers->contains(auth()->id());
+            $pub->likesCount = $pub->likers->count();
+            return $pub;
+        });     
+        return Inertia::render('Dashboard', [
             'publications' => $publications,
+            'notifications' => $unreadNotifications, 
         ]);
     })->name('dashboard');
 });
+
+Route::get('/profile', function () {
+    return Inertia::render('Profile/Show');
+})->middleware(['auth:sanctum', 'verified'])->name('profile');
 
 //authentication routes
 Route::get('/redirect/github', [ AuthController::class, 'GithubRedirect' ]);
@@ -41,3 +55,9 @@ Route::get('/callback/github', [ AuthController::class, 'GithubCallback' ]);
 
 Route::middleware('auth:sanctum')->post('/publications', [PublicationController::class, 'store'])->name('publications.store');
 Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::post('/toggle-like', [LikeController::class, 'toggleLike'])
+    ->middleware('auth')
+    ->name('toggle-like');
+
+Route::get('/publications/{id}', [PublicationController::class, 'show'])
+    ->name('publications.show');

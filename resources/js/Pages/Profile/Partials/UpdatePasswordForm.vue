@@ -50,39 +50,22 @@ const updatePassword = () => {
         <template #form>
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="current_password" value="Current Password" />
-                <TextInput
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                />
+                <TextInput id="current_password" ref="currentPasswordInput" v-model="form.current_password"
+                    type="password" class="mt-1 block w-full" autocomplete="current-password" />
                 <InputError :message="form.errors.current_password" class="mt-2" />
             </div>
 
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="password" value="New Password" />
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                />
+                <TextInput id="password" ref="passwordInput" v-model="form.password" type="password"
+                    class="mt-1 block w-full" autocomplete="new-password" />
                 <InputError :message="form.errors.password" class="mt-2" />
             </div>
 
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                />
+                <TextInput id="password_confirmation" v-model="form.password_confirmation" type="password"
+                    class="mt-1 block w-full" autocomplete="new-password" />
                 <InputError :message="form.errors.password_confirmation" class="mt-2" />
             </div>
         </template>
@@ -92,9 +75,38 @@ const updatePassword = () => {
                 Saved.
             </ActionMessage>
 
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <PrimaryButton class="sidebar-btn publish-btn" :class="{ 'opacity-25': form.processing }"
+                :disabled="form.processing">
                 Save
             </PrimaryButton>
         </template>
     </FormSection>
 </template>
+<style>
+.sidebar-btn {
+    max-width: fit-content;
+    display: flex;
+    text-align: center;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    color: #F4F4F9;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #6B5CFF;
+    transition: background-color 0.2s ease-in-out;
+    max-height: 30px;
+}
+
+.publish-btn {
+    background-color: #6B5CFF;
+}
+
+.publish-btn:hover {
+    background-color: #4A4AFF;
+}
+
+.sidebar-section {
+    margin-bottom: 16px;
+}
+</style>
