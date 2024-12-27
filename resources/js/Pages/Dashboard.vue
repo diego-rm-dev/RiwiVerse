@@ -255,34 +255,28 @@ function submitComment(post) {
         date: formatDateForMySQL(new Date().toISOString()),
     };
 
-    router.post('/comments', formData, {
-        preserveScroll: true, // Evita que Inertia haga scroll al inicio de la página
-        onSuccess: (response) => {
-            const newComment = response.props.newComment; // Asegúrate de que el servidor retorne el comentario recién creado.
+    axios.post('/comments', formData)
+        .then((response) => {
+            const newComment = response.data.comment;
 
-            // 1. Agregar el nuevo comentario al array local de comentarios de la publicación
+            // Encuentra la publicación específica
             const publicationIndex = publications.value.findIndex((p) => p.id === post.id);
             if (publicationIndex !== -1) {
+                // Crea un nuevo array para los comentarios para asegurar reactividad
                 publications.value[publicationIndex].comments = [
-                    ...(publications.value[publicationIndex].comments || []),
                     newComment,
+                    ...(publications.value[publicationIndex].comments || []),
                 ];
             }
 
-            // 2. Limpiar el campo de texto del comentario
+            // Limpia el campo de texto
             newCommentText.value[post.id] = '';
-
-            // 3. Mostrar logs para ver el estado actualizado
-            logInfo("Nuevo comentario agregado", {
-                postId: post.id,
-                comments: publications.value[publicationIndex]?.comments,
-            });
-        },
-        onError: (errors) => {
-            logError("Error al intentar agregar un comentario", errors);
-        },
-    });
+        })
+        .catch((errors) => {
+            console.error("Error al intentar agregar un comentario", errors);
+        });
 }
+
 /**
  * Maneja la navegación de imágenes (Siguiente)
  */

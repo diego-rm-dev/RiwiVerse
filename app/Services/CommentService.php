@@ -25,17 +25,19 @@ Class CommentService{
             'publication_id' => $validated['publication_id'],
         ]);
     
-        // Verifica si es una solicitud AJAX (Inertia.js)
-        if ($request->header('X-Inertia')) {
-            // Devolver un componente de Inertia con datos actualizados
-            return Inertia::render('Dashboard', [
-                'success' => 'Comentario creado exitosamente.',
-                'newComment' => $comment->load('user'),
-            ]);
+        // Verifica si es una solicitud AJAX
+        if ($request->expectsJson()) {
+            // Retorna una respuesta JSON con el nuevo comentario
+            return response()->json([
+                'message' => 'Comentario creado exitosamente.',
+                'comment' => $comment->load('user'), // Incluye la relación 'user' para los datos del usuario
+            ], 201);
         }
-        // Si no es una solicitud AJAX, redirige normalmente
+    
+        // Si no es una solicitud JSON, redirige normalmente
         return back()->with('success', 'Comentario creado exitosamente.');
     }
+    
     
     
 
